@@ -705,7 +705,7 @@ function prepare(rows){
 
 /* ===== State ===== */
 /* >>> ISI dengan URL Web App dari Google Apps Script (lihat panduan). Kosong = pakai file Excel/data bawaan. <<< */
-const API_URL = 'https://script.google.com/macros/s/xxxx/exec'';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxaw9xRT7XRh3mnqun4swTbxAkT39HuwQR3JRCz0gqLDFCbJRE2qZn0t33xtavSiEun/exec';
 
 let adminMode = false, adminToken = '', currentRow = null;
 let items = prepare(DATA);
@@ -922,7 +922,9 @@ async function loadData(){
         if (adminToken){ setAdmin(''); return loadData(); }   // kode salah → kembali ke mode publik
         throw new Error(j.error || 'API error');
       }
-      items = prepare(j.rows || []); refresh(); return;
+      const next = prepare(j.rows || []);
+      if (!next.length && !adminMode) throw new Error('API mengembalikan 0 data Publish');   // jangan kosongkan halaman
+      items = next; refresh(); return;
     } catch (err) { console.warn('Google Sheets tidak terbaca, memakai cadangan:', err); }
   }
   try {
