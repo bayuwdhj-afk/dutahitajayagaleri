@@ -231,13 +231,6 @@ body.isadmin .admbar{display:flex}
   <div class="wrap">
     © PT. Duta Hita Jaya
     <button type="button" class="adminlink" id="adminBtn">Admin</button>
-    <details>
-      <summary>Admin: pratinjau data dari file Excel</summary>
-      <div class="up">
-        <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
-        <p id="upMsg">Hanya untuk pratinjau di browser ini. Data bawaan halaman tidak berubah.</p>
-      </div>
-    </details>
   </div>
 </footer>
 
@@ -864,31 +857,6 @@ $('grid').addEventListener('click', e => {
 $('mClose').addEventListener('click', closeModal);
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal').classList.contains('on')) closeModal(); });
-
-/* Pratinjau dari Excel (opsional) */
-$('excelFile').addEventListener('change', e => {
-  const file = e.target.files[0]; if (!file) return;
-  const msg = $('upMsg');
-  if (typeof XLSX === 'undefined'){ msg.textContent = 'Library Excel belum termuat. Cek koneksi internet lalu coba lagi.'; return; }
-  const fr = new FileReader();
-  fr.onload = ev => {
-    try {
-      const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array', cellDates:true});
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
-      const next = prepare(rows);
-      if (!next.length){ msg.textContent = 'Tidak ada baris berstatus Publish dengan judul_project. Periksa kolom pada file.'; return; }
-      items = next;
-      Object.assign(state, {media:'ALL', cat:'ALL', year:'', loc:'', q:''});
-      $('q').value = '';
-      refresh();
-      msg.textContent = next.length + ' item dimuat dari "' + file.name + '". Hanya pratinjau, data bawaan halaman tidak berubah.';
-    } catch (err) {
-      console.error(err);
-      msg.textContent = 'Gagal membaca file Excel. Pastikan format kolom sesuai.';
-    }
-  };
-  fr.readAsArrayBuffer(file);
-});
 
 /* Hero: pakai foto jika tersedia, jika tidak tampil pola rangka baja */
 (function(){
